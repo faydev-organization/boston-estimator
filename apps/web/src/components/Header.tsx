@@ -1,150 +1,112 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation'; // Import router for navigation
-import Image from 'next/image';
-import Link from 'next/link';
-import Cookies from 'js-cookie'; // Import js-cookie for cookie handling
+import { useState } from 'react';
+import { IconButton } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 
-const Header = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null); // Explicitly type the ref
-  const router = useRouter(); // Initialize router
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target as Node)
-    ) {
-      setIsDropdownOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    // Check if the user is logged in by checking the auth token cookie
-    const token = Cookies.get('LOGIN_INFO');
-    setIsLoggedIn(!!token);
-  }, []);
-
-  const handleDropdownToggle = () => {
-    setIsDropdownOpen((prev) => !prev);
-  };
-
-  const clearAllCookies = () => {
-    const allCookies = Cookies.get();
-    for (const cookieName in allCookies) {
-      Cookies.remove(cookieName);
-    }
-  };
-
-  const handleLogout = () => {
-    clearAllCookies(); // Clear all cookies
-    setIsLoggedIn(false); // Update state
-    router.push('/'); // Redirect to home page
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
   };
 
   return (
-    <nav className="bg-white border-b-2 shadow-sm h-full">
-      <div className="mx-10 px-4 flex justify-between items-center py-4">
-        {/* Logo */}
-        <div className="flex items-center">
-          <Image
-            src="/logo.png" // Replace with the actual logo path
-            alt="Estimator.ID Logo"
-            width={40}
-            height={40}
-          />
-          <span className="ml-2 text-lg font-bold text-black">LOGO</span>
+    <nav className="bg-black lg:bg-transparent lg:bg-opacity-30 lg:backdrop-blur-lg p-4 fixed w-full z-50">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <div className="flex-shrink-0">
+          <a href="/" className="text-white text-2xl font-bold">
+            logo
+          </a>
         </div>
-
-        {/* Central Navigation and Buttons */}
-        <div className="ml-auto flex space-x-8 items-center">
-          {/* Menu Items */}
-          <div className="hidden md:flex space-x-8 items-center">
-            <Link
-              href="#"
-              className="text-gray-700 hover:text-green-500 font-medium"
+        <div className="block lg:hidden">
+          <IconButton
+            onClick={toggleMenu}
+            className="text-black focus:outline-none focus:bg-gray-700"
+          >
+            {isOpen ? <CloseIcon /> : <MenuIcon />}
+          </IconButton>
+        </div>
+        <div className="hidden lg:flex lg:items-center lg:w-auto">
+          <div className="text-md lg:flex-grow flex items-center justify-center w-full">
+            <a
+              href="/beranda"
+              className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-300 mx-4"
             >
-              Koleksi
-            </Link>
-            <Link
-              href="/pricing"
-              className="text-gray-700 hover:text-green-500 font-medium"
+              Beranda
+            </a>
+            <a
+              href="/tentangkami"
+              className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-300 mx-4"
+            >
+              Tentang Kami
+            </a>
+            <a
+              href="/paket"
+              className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-300 mx-4"
             >
               Paket
-            </Link>
-
-            {/* Fitur with Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <button
-                className="text-gray-700 hover:text-green-500 font-medium focus:outline-none"
-                onClick={handleDropdownToggle}
-              >
-                Fitur
-              </button>
-              {isDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-40 bg-white border rounded-md shadow-lg">
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Estimator
-                  </Link>
-                  <Link
-                    href="#"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                  >
-                    Suplier
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            <Link
-              href="#"
-              className="text-gray-700 hover:text-green-500 font-medium"
+            </a>
+            <a
+              href="/hubungikami"
+              className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-300 mx-4"
             >
-              Tutorial
-            </Link>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex space-x-4 items-center">
-            {' '}
-            <Link
-              href="#"
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full font-medium"
-            >
-              Mulai Proyek
-            </Link>
-            {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full font-medium"
+              Hubungi Kami
+            </a>
+            <button className="bg-orange-400 rounded-lg py-1">
+              <a
+                href="/"
+                className="block mt-4 lg:inline-block lg:mt-0 text-white hover:text-gray-300 mx-4"
               >
-                Keluar
-              </button>
-            ) : (
-              <Link
-                href="/auth/login"
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full font-medium"
-              >
-                Masuk
-              </Link>
-            )}
+                Aplikasi RAB
+              </a>
+            </button>
           </div>
         </div>
       </div>
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="lg:hidden mt-4 w-full text-center bg-white bg-opacity-70 backdrop-blur-lg p-4 rounded-lg">
+          <a
+            href="/beranda"
+            className="block mt-2 text-white hover:text-gray-300"
+            onClick={() => setIsOpen(false)}
+          >
+            Beranda
+          </a>
+          <a
+            href="/tentangkami"
+            className="block mt-2 text-white hover:text-gray-300"
+            onClick={() => setIsOpen(false)}
+          >
+            Tentang Kami
+          </a>
+          <a
+            href="/paket"
+            className="block mt-2 text-white hover:text-gray-300"
+            onClick={() => setIsOpen(false)}
+          >
+            Paket
+          </a>
+          <a
+            href="/hubungikami"
+            className="block mt-2 text-white hover:text-gray-300"
+            onClick={() => setIsOpen(false)}
+          >
+            Hubungi Kami
+          </a>
+          <a
+            href="/"
+            className="block mt-2 text-white hover:text-gray-300"
+            onClick={() => setIsOpen(false)}
+          >
+            Aplikasi RAB
+          </a>
+        </div>
+      )}
     </nav>
   );
 };
 
-export default Header;
+export default Navbar;
